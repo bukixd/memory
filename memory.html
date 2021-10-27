@@ -15,16 +15,84 @@
         }
     </style>
 </head>
+
 <body onload="init()">
     <div id="cards">
 
     </div>
 <script>
+    let cards = Array();
+    let selection = {}
+
     function init() {
+        let cardArray = Array();
+        for (let i = 0; i < 5; i++) {
+            cardArray.push("card"+i+".jpg");
+            cardArray.push("card"+i+".jpg");
+        }
+        let randomArray = Array()
+        while (cardArray.length > 0) {
+            let r = Math.floor(Math.random()*cardArray.length)
+            let randomCard = cardArray.splice(r, 1)[0];
+            randomCard = {'url': randomCard, 'isVisible': false}
+            randomArray.push(randomCard);
+        }
+        cards = randomArray;
+        displayCards();
+    }
+    function checkIfWin() {
+        let cardsHidden = 0;
+        for (let i =0; i<cards.length; i++) {
+            if(cards[i].isVisible == false)
+                cardsHidden++;
+        }
+        if(cardsHidden == 0)
+            alert("graty wygrales")
+    }
+    function displayCards() {
         let cardDiv = document.getElementById('cards');
         cardDiv.innerHTML = "";
-        for (let i = 0; i < 10; i++)
-            cardDiv.innerHTML += "<img src=\"card0.jpg\" alt=\"\">";
+        for (let i = 0; i < 10; i++) {
+            if (cards[i].isVisible) {
+                cardDiv.innerHTML +=
+                    "<img onClick=\"flipCard("+i+")\"src=\""
+                    + cards[i].url
+                    +"\" alt=\"\">";
+            } else {
+                cardDiv.innerHTML +=
+                    "<img onClick=\"flipCard("+i+")\" src=\"back.jpg\" alt=\"\">"
+            }
+        }
+    }
+    function flipCard(i) {
+        cards[i].isVisible = !cards[i].isVisible;
+        if (selection.first == null) {
+            selection.first = i;
+        } else {
+            if (selection.second == null) {
+                cards[i].isVisible = !cards[i].isVisible;
+                selection.second = i;
+                if(cards[selection.first].url == cards[selection.second].url) {
+                    console.log("dwie indentyczne");
+                    selection = {};
+                } else {
+                    console.log("dwie rozne");
+                    console.log(cards[selection.first].url + " i " + cards [selection.second].url)
+
+                    setTimeout(hide, 1000);
+                }
+            }
+        }
+        displayCards();
+        checkIfWin();
+        
+    }
+    function hide() {
+        console.log("uruchamiam hide");
+        cards[selection.first].isVisible = false;
+        cards[selection.second].isVisible = false;
+        selection = {};
+        displayCards();
     }
 </script>
 </body>
